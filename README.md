@@ -5,6 +5,13 @@ Dockerfile setup to install Jupyter with PySpark and Toree Kernel for Spark deve
 ## Example build and run commands
 
 ```bash
-docker build . --build-arg SPARK_VERSION=2.3.2 -t jupyter-spark-notebook:2.3.2
-docker run --rm -it -p 8888:8888 jupyter-spark-notebook:2.3.2
+SPARK_VERSION=2.4.0
+
+# Build
+docker build . \
+    --build-arg SPARK_VERSION=${SPARK_VERSION} \
+    -t guangie88/jupyter-pyspark-toree:spark-${SPARK_VERSION}
+
+# Run
+docker run --rm -it -p 8888:8888 guangie88/jupyter-pyspark-toree:spark-${SPARK_VERSION}
 ```
