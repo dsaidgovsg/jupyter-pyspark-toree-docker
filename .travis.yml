@@ -38,10 +38,11 @@ before_script:
 script:
 - TAG_NAME="spark-${SPARK_VERSION}_python-${PYTHON_MAJOR_VERSION}"
 - FULL_IMAGE_NAME="${IMAGE_NAME}:${TAG_NAME}"
-- docker build . \
-  --build-arg SPARK_VERSION="${SPARK_VERSION}" \
-  --build-arg PYTHON_MAJOR_VERSION="${PYTHON_MAJOR_VERSION}" \
-  -t ${FULL_IMAGE_NAME}
+- |
+  docker build . \
+    --build-arg SPARK_VERSION="${SPARK_VERSION}" \
+    --build-arg PYTHON_MAJOR_VERSION="${PYTHON_MAJOR_VERSION}" \
+    -t ${FULL_IMAGE_NAME}
 
 after_success:
 - |
