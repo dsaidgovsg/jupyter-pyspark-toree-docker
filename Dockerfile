@@ -11,7 +11,6 @@ ARG HADOOP_VERSION="2.7"
 ENV SPARK_NAME "spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}"
 ENV SPARK_DIR "/opt/${SPARK_NAME}"
 ENV SPARK_HOME "/usr/local/spark"
-ENV SPARK_OPTS "--driver-java-options=-Xms1024M --driver-java-options=-Xmx4096M --driver-java-options=-Dlog4j.logLevel=info"
 ENV PATH "${PATH}:${SPARK_HOME}/bin"
 
 # `ls ${SPARK_HOME}/python/lib/py4j* | sed -E 's/.+(py4j-.+)/\1/'` to get the py4j source zip file
