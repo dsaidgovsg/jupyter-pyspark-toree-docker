@@ -21,7 +21,7 @@ RUN set -eux; \
     mkdir /opt; \
     \
     # Spark installation
-    wget https://www.apache.org/dist/spark/spark-${SPARK_VERSION}/spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz; \
+    wget https://archive.apache.org/dist/spark/spark-${SPARK_VERSION}/spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz; \
     tar zxf spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz -C /opt; \
     rm spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz; \
     ln -s ${SPARK_DIR} ${SPARK_HOME}
