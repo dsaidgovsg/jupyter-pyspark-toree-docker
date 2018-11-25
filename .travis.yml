@@ -1,0 +1,66 @@
+language: bash
+
+env:
+  global:
+  - IMAGE_NAME=${DOCKER_USERNAME}/jupyter-pyspark-toree
+
+matrix:
+  include:
+  - services: docker
+    env:
+    - SPARK_VERSION=2.4.0
+  - services: docker
+    env:
+    - SPARK_VERSION=2.3.2
+  - services: docker
+    env:
+    - SPARK_VERSION=2.3.1
+  - services: docker
+    env:
+    - SPARK_VERSION=2.3.0
+  - services: docker
+    env:
+    - SPARK_VERSION=2.2.2
+  - services: docker
+    env:
+    - SPARK_VERSION=2.2.1
+  - services: docker
+    env:
+    - SPARK_VERSION=2.2.0
+  - services: docker
+    env:
+    - SPARK_VERSION=2.1.3
+  - services: docker
+    env:
+    - SPARK_VERSION=2.1.2
+  - services: docker
+    env:
+    - SPARK_VERSION=2.1.1
+  - services: docker
+    env:
+    - SPARK_VERSION=2.1.0
+  - services: docker
+    env:
+    - SPARK_VERSION=2.0.2
+  
+before_script:
+- set -e
+- docker login -u="${DOCKER_USERNAME}" -p="${DOCKER_PASSWORD}"
+
+script:
+- TAG_NAME="spark-${SPARK_VERSION}"
+- FULL_IMAGE_NAME="${IMAGE_NAME}:${TAG_NAME}"
+- |
+  docker build . \
+    --build-arg SPARK_VERSION="${SPARK_VERSION}" \
+    -t ${FULL_IMAGE_NAME}
+
+after_success:
+- |
+  if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then
+    docker push ${FULL_IMAGE_NAME};
+  fi
+
+branches:
+  only:
+  - master
