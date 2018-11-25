@@ -1,6 +1,13 @@
 # Jupyter Spark Toree Notebook Docker Builder
 
-Dockerfile setup to install Jupyter with PySpark and Toree Kernel for Spark development
+Dockerfile setup to install Jupyter with PySpark and Toree Kernel for Spark
+development.
+
+Contains the following Jupyter kernels:
+
+- \>= Python 2.7
+- \>= Python 3.6
+- \>= Toree 0.3
 
 ## Example build and run commands
 
@@ -13,5 +20,7 @@ docker build . \
     -t guangie88/jupyter-pyspark-toree:spark-${SPARK_VERSION}
 
 # Run
-docker run --rm -it -p 8888:8888 guangie88/jupyter-pyspark-toree:spark-${SPARK_VERSION}
+docker run --rm -it \
+    -p 8888:8888 \
+    guangie88/jupyter-pyspark-toree:spark-${SPARK_VERSION}
 ```

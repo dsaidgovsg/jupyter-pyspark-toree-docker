@@ -17,6 +17,10 @@ ENV NOTEBOOKS_DIR "/notebooks/"
 ENV GOSU_VERSION "1.11"
 
 RUN set -eux; \
+    if [ -z "${SPARK_VERSION}" ]; then \
+        echo "Please set --build-arg SPARK_VERSION for Docker build!" >&2; \
+        sh -c "exit 1"; \
+    fi; \
     apk add --no-cache bash g++ musl-dev; \
     mkdir /opt; \
     \
@@ -24,24 +28,18 @@ RUN set -eux; \
     wget https://archive.apache.org/dist/spark/spark-${SPARK_VERSION}/spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz; \
     tar zxf spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz -C /opt; \
     rm spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz; \
-    ln -s ${SPARK_DIR} ${SPARK_HOME}
-
-RUN set -eux; \
+    ln -s ${SPARK_DIR} ${SPARK_HOME}; \
     # Python
     apk add --no-cache python3 python3-dev; \
     apk add --no-cache python2 python2-dev py2-pip; \
     python2 -m pip install ipykernel; \
-    python2 -m ipykernel install;
-
-RUN set -eux; \
-    # Default to Python 3 executables
+    python2 -m ipykernel install; \
+    # Default to Python 2 executables due to kernel.json env bug for Python 2 kernel
     rm /usr/bin/python /usr/bin/pip; \
-    ln -s /usr/bin/python3 /usr/bin/python; \
-    ln -s /usr/bin/pip3 /usr/bin/pip; \
+    ln -s /usr/bin/python2 /usr/bin/python; \
+    ln -s /usr/bin/pip2 /usr/bin/pip; \
     python3 --version; \
-    python2 --version
-
-RUN set -eux; \
+    python2 --version; \
     # Jupyter
     python3 -m pip install --no-cache-dir jupyter toree; \
     jupyter --version; \
@@ -49,12 +47,12 @@ RUN set -eux; \
     apk add --no-cache jq; \
     PYTHON3_KERNEL_CONF="/usr/share/jupyter/kernels/python3/kernel.json"; \
     cat "${PYTHON3_KERNEL_CONF}" \
-        | jq --argjson env '{ "PYSPARK_PYTHON": "python3", "PYSPARK_DRIVER_PYTHON": "python3" }' '. + {env: $env}' \
+        | jq --argjson env '{ "PYSPARK_PYTHON": "python3" }' '. + {env: $env}' \
         > "${PYTHON3_KERNEL_CONF}.tmp"; \
     mv "${PYTHON3_KERNEL_CONF}.tmp" "${PYTHON3_KERNEL_CONF}"; \
     PYTHON2_KERNEL_CONF="/usr/share/jupyter/kernels/python2/kernel.json"; \
     cat "${PYTHON2_KERNEL_CONF}" \
-        | jq --argjson env '{ "PYSPARK_PYTHON": "python2", "PYSPARK_DRIVER_PYTHON": "python2" }' '. + {env: $env}' \
+        | jq --argjson env '{ "PYSPARK_PYTHON": "python2" }' '. + {env: $env}' \
         > "${PYTHON2_KERNEL_CONF}.tmp"; \
     mv "${PYTHON2_KERNEL_CONF}.tmp" "${PYTHON2_KERNEL_CONF}"; \
     apk del jq; \
