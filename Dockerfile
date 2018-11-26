@@ -77,19 +77,23 @@ RUN set -eux; \
     wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/${GOSU_VERSION}/gosu-$dpkgArch"; \
     wget -O /usr/local/bin/gosu.asc "https://github.com/tianon/gosu/releases/download/${GOSU_VERSION}/gosu-$dpkgArch.asc"; \
     # Verify the signature
-    export GNUPGHOME="$(mktemp -d)"; \
-    # For flaky keyservers, consider https://github.com/tianon/pgp-happy-eyeballs, ala https://github.com/docker-library/php/pull/666
+    GNUPGHOME="$(mktemp -d)"; \
     apt-get install -y --no-install-recommends gnupg2 dirmngr; \
-    gpg2 --batch --keyserver ha.pool.sks-keyservers.net --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4; \
-    gpg2 --batch --verify /usr/local/bin/gosu.asc /usr/local/bin/gosu; \
-    command -v gpgconf && gpgconf --kill all || :; \
+    # Skip the verification step for now, the keyserver is very buggy
+    # For flaky keyservers, consider https://github.com/tianon/pgp-happy-eyeballs, ala https://github.com/docker-library/php/pull/666
+    # count=0; \
+    # until (gpg2 --batch --keyserver ha.pool.sks-keyservers.net --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4) || ((count++ >= 10)); do \
+        # echo "Cannot contact keyserver, trying again..." \
+    # done; \
+    # gpg2 --batch --verify /usr/local/bin/gosu.asc /usr/local/bin/gosu; \
+    # command -v gpgconf && gpgconf --kill all || :; \
     rm -rf "${GNUPGHOME}" /usr/local/bin/gosu.asc; \
     # Clean up fetch dependencies
     chmod +x /usr/local/bin/gosu; \
     # Verify that the binary works
     gosu --version; \
     gosu nobody true; \
-    apt-get remove -y gnupg2 dirmngr;\
+    apt-get remove -y gnupg2 dirmngr; \
     #
     # Remove unnecessary build-time only dependencies
     #
