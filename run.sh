@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 set -e
 
 export USER="${USER:-jupyter}"
@@ -7,11 +7,11 @@ JUPYTER_FLAGS="${JUPYTER_FLAGS:---ip=0.0.0.0}"
 mkdir -p "${NOTEBOOKS_DIR}"
 
 if [ "${USER}" != "root" ]; then
-    adduser -D ${USER}
+    useradd -m "${USER}"
 fi
 
 # Generate default configuration if not exist with changes
-gosu "${USER}" sh -c '
+gosu "${USER}" bash -c '
     JUPYTER_CONFIG="${HOME}/.jupyter/jupyter_notebook_config.py" && \
     if [ ! -f "${JUPYTER_CONFIG}" ]; then
         jupyter notebook --generate-config
