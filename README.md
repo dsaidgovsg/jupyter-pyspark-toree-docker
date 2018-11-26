@@ -6,7 +6,7 @@ development.
 Contains the following Jupyter kernels:
 
 - \>= Python 2.7
-- \>= Python 3.6
+- \>= Python 3.5
 - \>= Toree 0.3
 
 ## Example build and run commands
