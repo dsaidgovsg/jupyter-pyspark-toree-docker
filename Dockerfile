@@ -1,41 +1,17 @@
 # Debian based
 ARG JAVA_VERSION=8
-FROM openjdk:${JAVA_VERSION}-jre-slim
-
-# Spark
-# e.g. 2.4.0
 ARG SPARK_VERSION=
-ARG HADOOP_VERSION="2.7"
+FROM guangie88/spark:${SPARK_VERSION}_java-${JAVA_VERSION}
 
-ENV SPARK_NAME "spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}"
-ENV SPARK_DIR "/opt/${SPARK_NAME}"
-ENV SPARK_HOME "/usr/local/spark"
-ENV PATH "${PATH}:${SPARK_HOME}/bin"
-
-# `ls ${SPARK_HOME}/python/lib/py4j* | sed -E 's/.+(py4j-.+)/\1/'` to get the py4j source zip file
-ENV PYTHONPATH "${SPARK_HOME}/python:${SPARK_HOME}/python/lib/py4j-0.10.7-src.zip"
-ENV NOTEBOOKS_DIR "/notebooks/"
 ENV GOSU_VERSION "1.11"
 
 RUN set -eux; \
-    # Setup and install 
-    if [ -z "${SPARK_VERSION}" ]; then \
-        echo "Please set --build-arg SPARK_VERSION for Docker build!" >&2; \
-        sh -c "exit 1"; \
-    fi; \
     apt-get update; \
     apt-get install -y --no-install-recommends \
         # Necessary deps
         g++ libc6-dev \
         # Build-time only deps
         wget; \
-    #
-    # Spark installation
-    #
-    wget https://archive.apache.org/dist/spark/spark-${SPARK_VERSION}/spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz; \
-    tar zxf spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz -C /opt; \
-    rm spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz; \
-    ln -s ${SPARK_DIR} ${SPARK_HOME}; \
     #
     # Python 2 installation
     #
@@ -100,8 +76,10 @@ RUN set -eux; \
     apt-get remove -y wget; \
     rm -rf /var/lib/apt/lists/*
 
+# `ls ${SPARK_HOME}/python/lib/py4j* | sed -E 's/.+(py4j-.+)/\1/'` to get the py4j source zip file
+ENV PYTHONPATH "${SPARK_HOME}/python:${SPARK_HOME}/python/lib/py4j-0.10.7-src.zip"
+ENV NOTEBOOKS_DIR "/notebooks/"
+
 COPY run.sh /
-
 EXPOSE 8888
-
 CMD ["./run.sh"]
