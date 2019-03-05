@@ -27,7 +27,7 @@ RUN set -eux; \
     #
     # Jupyter
     #
-    python3 -m pip install --no-cache-dir jupyter toree; \
+    python3 -m pip install --no-cache-dir jupyter "tornado<6" toree; \
     jupyter --version; \
     # Set the right Python version for Spark worker under PySpark
     apt-get install -y --no-install-recommends jq; \
