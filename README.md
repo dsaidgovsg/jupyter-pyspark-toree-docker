@@ -9,18 +9,22 @@ Contains the following Jupyter kernels:
 - \>= Python 3.5
 - \>= Toree 0.3
 
-## Example build and run commands
+## Generation of `.travis.yml`
+
+This requires `python3` and `pip`. This will allow the installation of
+`jinja2-cli`.
+
+Run the following:
 
 ```bash
-SPARK_VERSION=2.4.0
-
-# Build
-docker build . \
-    --build-arg SPARK_VERSION=${SPARK_VERSION} \
-    -t guangie88/jupyter-pyspark-toree:spark-${SPARK_VERSION}
-
-# Run
-docker run --rm -it \
-    -p 8888:8888 \
-    guangie88/jupyter-pyspark-toree:spark-${SPARK_VERSION}
+python3 -m pip install --user jinja2-cli[yaml]
 ```
+
+Once installed, to generate the new `.travis.yml` file, run:
+
+```bash
+./apply-vars.sh
+```
+
+As such, it is generally only necessary to update `vars.yml` to generate for
+new Spark builds.
