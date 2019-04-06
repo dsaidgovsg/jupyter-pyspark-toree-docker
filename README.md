@@ -9,6 +9,9 @@ Contains the following Jupyter kernels:
 - \>= Python 3.5
 - \>= Toree 0.3
 
+The base image used also contains some other useful Cloud SDK JARs, details can
+be found in the repo <https://github.com/guangie88/spark-custom-addons>.
+
 ## Generation of `.travis.yml`
 
 This requires `python3` and `pip`. This will allow the installation of

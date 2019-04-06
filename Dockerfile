@@ -1,5 +1,5 @@
 # Debian based
-ARG FROM_DOCKER_IMAGE="guangie88/spark-custom"
+ARG FROM_DOCKER_IMAGE="guangie88/spark-custom-addons"
 ARG FROM_DOCKER_TAG=
 
 FROM ${FROM_DOCKER_IMAGE}:${FROM_DOCKER_TAG}
