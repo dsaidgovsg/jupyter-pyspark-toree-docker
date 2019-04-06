@@ -78,7 +78,7 @@ RUN set -eux; \
     rm -rf /var/lib/apt/lists/*
 
 # `ls ${SPARK_HOME}/python/lib/py4j* | sed -E 's/.+(py4j-.+)/\1/'` to get the py4j source zip file
-ENV PYTHONPATH "${SPARK_HOME}/python:${SPARK_HOME}/python/lib/py4j-0.10.7-src.zip"
+ENV PYTHONPATH "${SPARK_HOME}/python:${SPARK_HOME}/python/lib/${PY4J_SRC}"
 ENV NOTEBOOKS_DIR "/notebooks/"
 
 COPY run.sh /
