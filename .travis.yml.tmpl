@@ -28,6 +28,7 @@ script:
   docker build . -t ${FULL_IMAGE_NAME} \
     --build-arg FROM_DOCKER_IMAGE=${FROM_DOCKER_IMAGE} \
     --build-arg FROM_DOCKER_TAG=${FROM_DOCKER_TAG} \
+    --build-arg JUPYTER_VERSION=${JUPYTER_VERSION} \
     --build-arg PY4J_SRC=${PY4J_SRC} \
     ;
 # Just push, doesn't matter if it's TRAVIS_PULL_REQUEST false/true
