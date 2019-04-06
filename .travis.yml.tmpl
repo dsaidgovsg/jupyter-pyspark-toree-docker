@@ -10,6 +10,7 @@ matrix:
 {% for v in versions %}
   - services: docker
     env:
+    - JUPYTER_VERSION={{ v.jupyter }}
     - SPARK_VERSION={{ v.spark }}
     - HADOOP_VERSION={{ v.hadoop }}
     - WITH_HIVE={{ v.with_hive }}
@@ -19,7 +20,7 @@ script:
 - set -e
 - docker login -u="${DOCKER_USERNAME}" -p="${DOCKER_PASSWORD}"
 - HIVE_TAG_SUFFIX=$(if [ "${WITH_HIVE}" = "true" ]; then echo _hive; fi)
-- TAG_NAME=${SPARK_VERSION}_hadoop-${HADOOP_VERSION}${HIVE_TAG_SUFFIX}_pyspark_debian
+- TAG_NAME=${JUPYTER_VERSION}_spark-${SPARK_VERSION}_hadoop-${HADOOP_VERSION}${HIVE_TAG_SUFFIX}_pyspark_debian
 - FULL_IMAGE_NAME="${IMAGE_NAME}:${TAG_NAME}"
 - FROM_DOCKER_TAG="${SPARK_VERSION}_hadoop-${HADOOP_VERSION}${HIVE_TAG_SUFFIX}_pyspark_debian"
 - PY4J_SRC=$(docker run --rm -t ${FROM_DOCKER_IMAGE}:${FROM_DOCKER_TAG} sh -c 'ls ${SPARK_HOME}/python/lib/py4j* | sed -E "s/.+(py4j-.+)/\1/"')
@@ -31,6 +32,10 @@ script:
     ;
 # Just push, doesn't matter if it's TRAVIS_PULL_REQUEST false/true
 - docker push ${FULL_IMAGE_NAME}
+# Alternative tags
+- WITHOUT_JUPYTER_VERSION_IMAGE=${IMAGE_NAME}:spark-${SPARK_VERSION}_hadoop-${HADOOP_VERSION}${HIVE_TAG_SUFFIX}_pyspark_debian
+- docker tag ${FULL_IMAGE_NAME} ${WITHOUT_JUPYTER_VERSION_IMAGE}
+- docker push ${WITHOUT_JUPYTER_VERSION_IMAGE}
 
 branches:
   only:

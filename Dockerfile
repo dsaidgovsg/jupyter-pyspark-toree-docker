@@ -3,6 +3,7 @@ ARG FROM_DOCKER_IMAGE="guangie88/spark-custom"
 ARG FROM_DOCKER_TAG=
 
 FROM ${FROM_DOCKER_IMAGE}:${FROM_DOCKER_TAG}
+ARG JUPYTER_VERSION=
 ARG PY4J_SRC=
 ENV GOSU_VERSION "1.11"
 
@@ -28,7 +29,7 @@ RUN set -eux; \
     #
     # Jupyter
     #
-    python3 -m pip install --no-cache-dir jupyter "tornado<6" toree; \
+    python3 -m pip install --no-cache-dir "jupyter==${JUPYTER_VERSION}" "tornado<6" toree; \
     jupyter --version; \
     # Set the right Python version for Spark worker under PySpark
     apt-get install -y --no-install-recommends jq; \
