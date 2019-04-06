@@ -1,8 +1,10 @@
 # Debian based
-ARG JAVA_VERSION=8
-ARG SPARK_VERSION=
-FROM guangie88/spark:${SPARK_VERSION}_java-${JAVA_VERSION}
+ARG FROM_DOCKER_IMAGE="guangie88/spark-custom-addons"
+ARG FROM_DOCKER_TAG=
 
+FROM ${FROM_DOCKER_IMAGE}:${FROM_DOCKER_TAG}
+ARG JUPYTER_VERSION=
+ARG PY4J_SRC=
 ENV GOSU_VERSION "1.11"
 
 RUN set -eux; \
@@ -27,7 +29,7 @@ RUN set -eux; \
     #
     # Jupyter
     #
-    python3 -m pip install --no-cache-dir jupyter "tornado<6" toree; \
+    python3 -m pip install --no-cache-dir "jupyter==${JUPYTER_VERSION}" "tornado<6" toree; \
     jupyter --version; \
     # Set the right Python version for Spark worker under PySpark
     apt-get install -y --no-install-recommends jq; \
@@ -77,7 +79,7 @@ RUN set -eux; \
     rm -rf /var/lib/apt/lists/*
 
 # `ls ${SPARK_HOME}/python/lib/py4j* | sed -E 's/.+(py4j-.+)/\1/'` to get the py4j source zip file
-ENV PYTHONPATH "${SPARK_HOME}/python:${SPARK_HOME}/python/lib/py4j-0.10.7-src.zip"
+ENV PYTHONPATH "${SPARK_HOME}/python:${SPARK_HOME}/python/lib/${PY4J_SRC}"
 ENV NOTEBOOKS_DIR "/notebooks/"
 
 COPY run.sh /
