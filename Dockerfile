@@ -78,7 +78,7 @@ RUN set -eux; \
     apt-get remove -y wget; \
     rm -rf /var/lib/apt/lists/*
 
-# `ls ${SPARK_HOME}/python/lib/py4j* | sed -E 's/.+(py4j-.+)/\1/'` to get the py4j source zip file
+# `ls ${SPARK_HOME}/python/lib/py4j* | sed -E "s/.+(py4j-.+)/\1/" | tr -d "\n"` to get the py4j source zip file
 ENV PYTHONPATH "${SPARK_HOME}/python:${SPARK_HOME}/python/lib/${PY4J_SRC}"
 ENV NOTEBOOKS_DIR "/notebooks/"
 
