@@ -2,7 +2,7 @@ language: bash
 
 env:
   global:
-  - IMAGE_NAME=guangie88/jupyter-pyspark-toree
+  - IMAGE_NAME=jupyter-pyspark-toree
   - FROM_DOCKER_IMAGE=guangie88/spark-custom-addons
 
 matrix:
@@ -79,7 +79,7 @@ script:
 - FROM_DOCKER_TAG="${SPARK_VERSION}_scala-${SCALA_VERSION}_hadoop-${HADOOP_VERSION}_python-${PYTHON_VERSION}${HIVE_TAG_SUFFIX}_pyspark_debian"
 - PY4J_SRC="$(docker run --rm -t "${FROM_DOCKER_IMAGE}:${FROM_DOCKER_TAG}" sh -c 'ls ${SPARK_HOME}/python/lib/py4j* | sed -E "s/.+(py4j-.+)/\1/" | tr -d "\n"')"
 - |
-  docker build . -t "${IMAGE_NAME}:${TAG_NAME}" \
+  docker build . -t "${DOCKER_USERNAME}/{IMAGE_NAME}:${TAG_NAME}" \
     --build-arg "FROM_DOCKER_IMAGE=${FROM_DOCKER_IMAGE}" \
     --build-arg "FROM_DOCKER_TAG=${FROM_DOCKER_TAG}" \
     --build-arg "JUPYTER_VERSION=${JUPYTER_VERSION}" \
