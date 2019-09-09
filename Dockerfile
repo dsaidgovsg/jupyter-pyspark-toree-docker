@@ -7,7 +7,7 @@ ARG JUPYTER_VERSION=
 ARG PY4J_SRC=
 ENV GOSU_VERSION "1.11"
 
-RUN set -eux; \
+RUN set -euo && \
     apt-get update; \
     apt-get install -y --no-install-recommends \
         # Necessary deps
@@ -15,34 +15,22 @@ RUN set -eux; \
         # Build-time only deps
         wget; \
     #
-    # Python 2 installation
+    # Python installation
     #
-    apt-get install -y --no-install-recommends python python-dev python-pip python-setuptools; \
-    python2 -m pip install ipykernel; \
-    python2 -m ipykernel install; \
-    python2 --version; \
-    #
-    # Python 3 installation (default for running Jupyter)
-    #
-    apt-get install -y --no-install-recommends python3 python3-dev python3-pip python3-setuptools; \
-    python3 --version; \
+    python -m pip install ipykernel; \
     #
     # Jupyter
     #
-    python3 -m pip install --no-cache-dir "jupyter==${JUPYTER_VERSION}" "tornado<6" toree; \
+    python -m pip install --no-cache-dir "jupyter==${JUPYTER_VERSION}" "tornado<6" toree; \
     jupyter --version; \
     # Set the right Python version for Spark worker under PySpark
     apt-get install -y --no-install-recommends jq; \
-    PYTHON3_KERNEL_CONF="/usr/local/share/jupyter/kernels/python3/kernel.json"; \
-    cat "${PYTHON3_KERNEL_CONF}" \
-        | jq --argjson env '{ "PYSPARK_PYTHON": "python3" }' '. + {env: $env}' \
-        > "${PYTHON3_KERNEL_CONF}.tmp"; \
-    mv "${PYTHON3_KERNEL_CONF}.tmp" "${PYTHON3_KERNEL_CONF}"; \
-    PYTHON2_KERNEL_CONF="/usr/local/share/jupyter/kernels/python2/kernel.json"; \
-    cat "${PYTHON2_KERNEL_CONF}" \
-        | jq --argjson env '{ "PYSPARK_PYTHON": "python2" }' '. + {env: $env}' \
-        > "${PYTHON2_KERNEL_CONF}.tmp"; \
-    mv "${PYTHON2_KERNEL_CONF}.tmp" "${PYTHON2_KERNEL_CONF}"; \
+    PYTHON_MAJOR_VERSION="$(python --version | grep -oE '[[:digit:]]\.[[:digit:]]\.[[:digit:]]' | cut -d '.' -f1)"; \
+    PYTHON_KERNEL_CONF="/usr/local/share/jupyter/kernels/python${PYTHON_MAJOR_VERSION}/kernel.json"; \
+    cat "${PYTHON_KERNEL_CONF}" \
+        | jq --argjson env '{ "PYSPARK_PYTHON": "python" }' '. + {env: $env}' \
+        > "${PYTHON_KERNEL_CONF}.tmp"; \
+    mv "${PYTHON_KERNEL_CONF}.tmp" "${PYTHON_KERNEL_CONF}"; \
     apt-get remove -y jq; \
     #
     # Toree

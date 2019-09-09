@@ -2,160 +2,95 @@ language: bash
 
 env:
   global:
-  - IMAGE_NAME=${DOCKER_USERNAME}/jupyter-pyspark-toree
+  - IMAGE_NAME=guangie88/jupyter-pyspark-toree
   - FROM_DOCKER_IMAGE=guangie88/spark-custom-addons
 
 matrix:
   include:
-
   - services: docker
     env:
     - JUPYTER_VERSION=1.0.0
-    - SPARK_VERSION=2.4.2
+    - SPARK_VERSION=2.4.4
+    - SCALA_VERSION=2.11
     - HADOOP_VERSION=3.1.0
+    - PYTHON_VERSION=2.7
     - WITH_HIVE=true
-
   - services: docker
     env:
     - JUPYTER_VERSION=1.0.0
-    - SPARK_VERSION=2.4.2
-    - HADOOP_VERSION=2.7.3
-    - WITH_HIVE=true
-
-  - services: docker
-    env:
-    - JUPYTER_VERSION=1.0.0
-    - SPARK_VERSION=2.4.1
+    - SPARK_VERSION=2.4.4
+    - SCALA_VERSION=2.11
     - HADOOP_VERSION=3.1.0
+    - PYTHON_VERSION=3.7
     - WITH_HIVE=true
-
   - services: docker
     env:
     - JUPYTER_VERSION=1.0.0
-    - SPARK_VERSION=2.4.1
-    - HADOOP_VERSION=2.7.3
-    - WITH_HIVE=true
-
-  - services: docker
-    env:
-    - JUPYTER_VERSION=1.0.0
-    - SPARK_VERSION=2.4.0
+    - SPARK_VERSION=2.4.4
+    - SCALA_VERSION=2.12
     - HADOOP_VERSION=3.1.0
+    - PYTHON_VERSION=2.7
     - WITH_HIVE=true
-
   - services: docker
     env:
     - JUPYTER_VERSION=1.0.0
-    - SPARK_VERSION=2.4.0
-    - HADOOP_VERSION=2.7.3
+    - SPARK_VERSION=2.4.4
+    - SCALA_VERSION=2.12
+    - HADOOP_VERSION=3.1.0
+    - PYTHON_VERSION=3.7
     - WITH_HIVE=true
-
   - services: docker
     env:
     - JUPYTER_VERSION=1.0.0
     - SPARK_VERSION=2.3.3
+    - SCALA_VERSION=2.11
     - HADOOP_VERSION=2.7.3
+    - PYTHON_VERSION=2.7
     - WITH_HIVE=true
-
   - services: docker
     env:
     - JUPYTER_VERSION=1.0.0
-    - SPARK_VERSION=2.3.2
+    - SPARK_VERSION=2.3.3
+    - SCALA_VERSION=2.11
     - HADOOP_VERSION=2.7.3
+    - PYTHON_VERSION=3.7
     - WITH_HIVE=true
-
   - services: docker
     env:
     - JUPYTER_VERSION=1.0.0
-    - SPARK_VERSION=2.3.1
+    - SPARK_VERSION=2.3.3
+    - SCALA_VERSION=2.12
     - HADOOP_VERSION=2.7.3
+    - PYTHON_VERSION=2.7
     - WITH_HIVE=true
-
   - services: docker
     env:
     - JUPYTER_VERSION=1.0.0
-    - SPARK_VERSION=2.3.0
+    - SPARK_VERSION=2.3.3
+    - SCALA_VERSION=2.12
     - HADOOP_VERSION=2.7.3
+    - PYTHON_VERSION=3.7
     - WITH_HIVE=true
-
-  - services: docker
-    env:
-    - JUPYTER_VERSION=1.0.0
-    - SPARK_VERSION=2.2.3
-    - HADOOP_VERSION=2.7.3
-    - WITH_HIVE=true
-
-  - services: docker
-    env:
-    - JUPYTER_VERSION=1.0.0
-    - SPARK_VERSION=2.2.2
-    - HADOOP_VERSION=2.7.3
-    - WITH_HIVE=true
-
-  - services: docker
-    env:
-    - JUPYTER_VERSION=1.0.0
-    - SPARK_VERSION=2.2.1
-    - HADOOP_VERSION=2.7.3
-    - WITH_HIVE=true
-
-  - services: docker
-    env:
-    - JUPYTER_VERSION=1.0.0
-    - SPARK_VERSION=2.2.0
-    - HADOOP_VERSION=2.7.3
-    - WITH_HIVE=true
-
-  - services: docker
-    env:
-    - JUPYTER_VERSION=1.0.0
-    - SPARK_VERSION=2.1.3
-    - HADOOP_VERSION=2.7.3
-    - WITH_HIVE=true
-
-  - services: docker
-    env:
-    - JUPYTER_VERSION=1.0.0
-    - SPARK_VERSION=2.1.2
-    - HADOOP_VERSION=2.7.3
-    - WITH_HIVE=true
-
-  - services: docker
-    env:
-    - JUPYTER_VERSION=1.0.0
-    - SPARK_VERSION=2.1.1
-    - HADOOP_VERSION=2.7.3
-    - WITH_HIVE=true
-
-  - services: docker
-    env:
-    - JUPYTER_VERSION=1.0.0
-    - SPARK_VERSION=2.1.0
-    - HADOOP_VERSION=2.7.3
-    - WITH_HIVE=true
-
 
 script:
-- set -e
-- docker login -u="${DOCKER_USERNAME}" -p="${DOCKER_PASSWORD}"
-- HIVE_TAG_SUFFIX=$(if [ "${WITH_HIVE}" = "true" ]; then echo _hive; fi)
-- TAG_NAME=${JUPYTER_VERSION}_spark-${SPARK_VERSION}_hadoop-${HADOOP_VERSION}${HIVE_TAG_SUFFIX}_pyspark_debian
-- FULL_IMAGE_NAME="${IMAGE_NAME}:${TAG_NAME}"
-- FROM_DOCKER_TAG="${SPARK_VERSION}_hadoop-${HADOOP_VERSION}${HIVE_TAG_SUFFIX}_pyspark_debian"
-- PY4J_SRC=$(docker run --rm -t ${FROM_DOCKER_IMAGE}:${FROM_DOCKER_TAG} sh -c 'ls ${SPARK_HOME}/python/lib/py4j* | sed -E "s/.+(py4j-.+)/\1/" | tr -d "\n"')
+- shellcheck push-images.sh
+- HIVE_TAG_SUFFIX="$(if [ "${WITH_HIVE}" = "true" ]; then echo _hive; fi)"
+- TAG_NAME="${JUPYTER_VERSION}_spark-${SPARK_VERSION}_scala-${SCALA_VERSION}_hadoop-${HADOOP_VERSION}_python-${PYTHON_VERSION}${HIVE_TAG_SUFFIX}_debian"
+- FROM_DOCKER_TAG="${SPARK_VERSION}_scala-${SCALA_VERSION}_hadoop-${HADOOP_VERSION}_python-${PYTHON_VERSION}${HIVE_TAG_SUFFIX}_pyspark_debian"
+- PY4J_SRC="$(docker run --rm -t "${FROM_DOCKER_IMAGE}:${FROM_DOCKER_TAG}" sh -c 'ls ${SPARK_HOME}/python/lib/py4j* | sed -E "s/.+(py4j-.+)/\1/" | tr -d "\n"')"
 - |
-  docker build . -t ${FULL_IMAGE_NAME} \
-    --build-arg FROM_DOCKER_IMAGE=${FROM_DOCKER_IMAGE} \
-    --build-arg FROM_DOCKER_TAG=${FROM_DOCKER_TAG} \
-    --build-arg JUPYTER_VERSION=${JUPYTER_VERSION} \
-    --build-arg PY4J_SRC=${PY4J_SRC} \
+  docker build . -t "${IMAGE_NAME}:${TAG_NAME}" \
+    --build-arg "FROM_DOCKER_IMAGE=${FROM_DOCKER_IMAGE}" \
+    --build-arg "FROM_DOCKER_TAG=${FROM_DOCKER_TAG}" \
+    --build-arg "JUPYTER_VERSION=${JUPYTER_VERSION}" \
+    --build-arg "PY4J_SRC=${PY4J_SRC}" \
     ;
-# Just push, doesn't matter if it's TRAVIS_PULL_REQUEST false/true
-- docker push ${FULL_IMAGE_NAME}
-# Alternative tags
-- WITHOUT_JUPYTER_VERSION_IMAGE=${IMAGE_NAME}:spark-${SPARK_VERSION}_hadoop-${HADOOP_VERSION}${HIVE_TAG_SUFFIX}_pyspark_debian
-- docker tag ${FULL_IMAGE_NAME} ${WITHOUT_JUPYTER_VERSION_IMAGE}
-- docker push ${WITHOUT_JUPYTER_VERSION_IMAGE}
+
+deploy:
+  provider: script
+  script: bash push-images.sh
+  on:
+    branch: master
 
 branches:
   only:
