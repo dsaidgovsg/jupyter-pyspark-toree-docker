@@ -25,7 +25,8 @@ RUN set -euo && \
     jupyter --version; \
     # Set the right Python version for Spark worker under PySpark
     apt-get install -y --no-install-recommends jq; \
-    PYTHON_MAJOR_VERSION="$(python --version | grep -oE '[[:digit:]]\.[[:digit:]]\.[[:digit:]]' | cut -d '.' -f1)"; \
+    ## Python 2 prints version to stderr
+    PYTHON_MAJOR_VERSION="$(python --version 2>&1 | grep -oE '[[:digit:]]\.[[:digit:]]\.[[:digit:]]' | cut -d '.' -f1)"; \
     PYTHON_KERNEL_CONF="/usr/local/share/jupyter/kernels/python${PYTHON_MAJOR_VERSION}/kernel.json"; \
     cat "${PYTHON_KERNEL_CONF}" \
         | jq --argjson env '{ "PYSPARK_PYTHON": "python" }' '. + {env: $env}' \
