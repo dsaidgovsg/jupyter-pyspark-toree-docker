@@ -7,7 +7,7 @@ versions:
   with_hive: ['true']
 
 - jupyter:   ['1.0.0']
-  spark:     ['2.3.3']
+  spark:     ['2.3.4']
   scala:     ['2.11', '2.12']
   hadoop:    ['2.7.3']
   python:    ['2.7', '3.7']
