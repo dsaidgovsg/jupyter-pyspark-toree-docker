@@ -16,13 +16,13 @@ jobs:
       matrix:
         version:
 {%- for v in versions %}
-{%- for jupyter in v.jupyter %}
+{%- for notebook in v.notebook %}
 {%- for spark in v.spark %}
 {%- for scala in v.scala %}
 {%- for hadoop in v.hadoop %}
 {%- for python in v.python %}
 {%- for with_hive in v.with_hive %}
-        - jupyter:      "{{ jupyter }}"
+        - notebook:     "{{ notebook }}"
           spark:        "{{ spark }}"
           scala:        "{{ scala }}"
           hadoop:       "{{ hadoop }}"
@@ -41,7 +41,7 @@ jobs:
       SELF_VERSION: "{{ self_version }}"
       BASE_VERSION: "v2"
       {% raw -%}
-      JUPYTER_VERSION: "${{ matrix.version.jupyter }}"
+      NOTEBOOK_VERSION: "${{ matrix.version.notebook }}"
       SPARK_VERSION: "${{ matrix.version.spark }}"
       SCALA_VERSION: "${{ matrix.version.scala }}"
       HADOOP_VERSION: "${{ matrix.version.hadoop }}"
@@ -65,10 +65,10 @@ jobs:
     - name: Build Docker image
       run: |-
         HIVE_TAG_SUFFIX="$(if [ "${WITH_HIVE}" = "true" ]; then echo _hive; fi)"
-        TAG_NAME="${SELF_VERSION}_${JUPYTER_VERSION}_spark-${SPARK_VERSION}_scala-${SCALA_VERSION}_hadoop-${HADOOP_VERSION}_python-${PYTHON_VERSION}${HIVE_TAG_SUFFIX}_debian"
+        TAG_NAME="${SELF_VERSION}_${NOTEBOOK_VERSION}_spark-${SPARK_VERSION}_scala-${SCALA_VERSION}_hadoop-${HADOOP_VERSION}_python-${PYTHON_VERSION}${HIVE_TAG_SUFFIX}_debian"
         docker build . -t "${IMAGE_NAME}:${TAG_NAME}" \
           --build-arg BASE_VERSION=${BASE_VERSION} \
-          --build-arg JUPYTER_VERSION=${JUPYTER_VERSION} \
+          --build-arg NOTEBOOK_VERSION=${NOTEBOOK_VERSION} \
           --build-arg SPARK_VERSION=${SPARK_VERSION} \
           --build-arg SCALA_VERSION=${SCALA_VERSION} \
           --build-arg HADOOP_VERSION=${HADOOP_VERSION} \

@@ -7,7 +7,7 @@ ARG PYTHON_VERSION
 ARG HIVE_TAG_SUFFIX
 FROM guangie88/spark-custom-addons:${BASE_VERSION}_${SPARK_VERSION}_scala-${SCALA_VERSION}_hadoop-${HADOOP_VERSION}_python-${PYTHON_VERSION}${HIVE_TAG_SUFFIX}_pyspark_debian
 
-ARG JUPYTER_VERSION=
+ARG NOTEBOOK_VERSION=
 ARG PY4J_SRC=
 ENV GOSU_VERSION "1.11"
 
@@ -25,7 +25,8 @@ RUN set -euo && \
     #
     # Jupyter
     #
-    python -m pip install --no-cache-dir "jupyter==${JUPYTER_VERSION}" "tornado<6" toree; \
+    NOTEBOOK_XY_VERSION="$(echo ${NOTEBOOK_VERSION} | cut -d "." -f 1,2)"; \
+    python -m pip install --no-cache-dir "notebook==${NOTEBOOK_XY_VERSION}.*" toree; \
     jupyter --version; \
     # Set the right Python version for Spark worker under PySpark
     apt-get install -y --no-install-recommends jq; \
