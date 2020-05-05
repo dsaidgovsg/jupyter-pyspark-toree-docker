@@ -185,7 +185,10 @@ jobs:
     - name: Shellcheck push image script
       run: shellcheck push-images.sh
     - name: Build Docker image
+      # Alternative `ls ${SPARK_HOME}/python/lib/py4j* | sed -E "s/.+(py4j-.+)/\1/" | tr -d "\n"` in the container to get the py4j source zip file
       run: |-
+        PY4J_SRC="$(curl -s https://github.com/apache/spark/tree/v${SPARK_VERSION}/python/lib | grep -oP 'py4j-\d+\.\d+\.\d+-src.zip' | head -1 | tr -d "\n")"
+        if [ -z "${PY4J_SRC}" ]; then echo "PY4J_SRC must have a value" && exit 1; fi
         HIVE_TAG_SUFFIX="$(if [ "${WITH_HIVE}" = "true" ]; then echo _hive; fi)"
         TAG_NAME="${SELF_VERSION}_${NOTEBOOK_VERSION}_spark-${SPARK_VERSION}_scala-${SCALA_VERSION}_hadoop-${HADOOP_VERSION}_python-${PYTHON_VERSION}${HIVE_TAG_SUFFIX}_debian"
         docker build . -t "${IMAGE_NAME}:${TAG_NAME}" \
@@ -196,6 +199,8 @@ jobs:
           --build-arg HADOOP_VERSION=${HADOOP_VERSION} \
           --build-arg PYTHON_VERSION=${PYTHON_VERSION} \
           --build-arg HIVE_TAG_SUFFIX=${HIVE_TAG_SUFFIX} \
+          --build-arg PY4J_SRC=${PY4J_SRC}
+        docker run --rm -t "${IMAGE_NAME}:${TAG_NAME}" python -c "import py4j; import pyspark"
     - name: Push Docker image
       run: |-
         export HIVE_TAG_SUFFIX="$(if [ "${WITH_HIVE}" = "true" ]; then echo _hive; fi)"
