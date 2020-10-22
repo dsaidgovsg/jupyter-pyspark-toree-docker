@@ -39,7 +39,7 @@ jobs:
     env:
       IMAGE_NAME: jupyter-pyspark-toree
       SELF_VERSION: "{{ self_version }}"
-      BASE_VERSION: "v2"
+      BASE_VERSION: "{{ base_version }}"
       {% raw -%}
       NOTEBOOK_VERSION: "${{ matrix.version.notebook }}"
       SPARK_VERSION: "${{ matrix.version.spark }}"
