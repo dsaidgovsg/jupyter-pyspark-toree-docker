@@ -171,6 +171,12 @@ jobs:
       PYTHON_VERSION: "${{ matrix.version.python }}"
       WITH_HIVE: "${{ matrix.version.with_hive }}"
     steps:
+    - name: Set global environment variables
+      run: |-
+        TAG_NAME="${SELF_VERSION}_${NOTEBOOK_VERSION}_spark-${SPARK_VERSION}_scala-${SCALA_VERSION}_hadoop-${HADOOP_VERSION}_python-${PYTHON_VERSION}${HIVE_TAG_SUFFIX}_debian"
+        echo "TAG_NAME=${TAG_NAME}" >> $GITHUB_ENV
+        HIVE_TAG_SUFFIX="$(if [ "${WITH_HIVE}" = "true" ]; then echo _hive; fi)"
+        echo "HIVE_TAG_SUFFIX=${HIVE_TAG_SUFFIX}" >> $GITHUB_ENV
     - name: Checkout code
       uses: actions/checkout@v1
     - name: Install tera-cli
@@ -189,8 +195,6 @@ jobs:
       run: |-
         PY4J_SRC="$(curl -s https://github.com/apache/spark/tree/v${SPARK_VERSION}/python/lib | grep -oP 'py4j-\d+\.\d+\.\d+-src.zip' | head -1 | tr -d "\n")"
         if [ -z "${PY4J_SRC}" ]; then echo "PY4J_SRC must have a value" && exit 1; fi
-        HIVE_TAG_SUFFIX="$(if [ "${WITH_HIVE}" = "true" ]; then echo _hive; fi)"
-        TAG_NAME="${SELF_VERSION}_${NOTEBOOK_VERSION}_spark-${SPARK_VERSION}_scala-${SCALA_VERSION}_hadoop-${HADOOP_VERSION}_python-${PYTHON_VERSION}${HIVE_TAG_SUFFIX}_debian"
         docker build . -t "${IMAGE_NAME}:${TAG_NAME}" \
           --build-arg BASE_VERSION=${BASE_VERSION} \
           --build-arg NOTEBOOK_VERSION=${NOTEBOOK_VERSION} \
@@ -202,9 +206,7 @@ jobs:
           --build-arg PY4J_SRC=${PY4J_SRC}
         docker run --rm -t "${IMAGE_NAME}:${TAG_NAME}" python -c "import py4j; import pyspark"
     - name: Push Docker image
-      run: |-
-        export HIVE_TAG_SUFFIX="$(if [ "${WITH_HIVE}" = "true" ]; then echo _hive; fi)"
-        bash push-images.sh
+      run: bash push-images.sh
       env:
         DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
         DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
